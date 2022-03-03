@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "peronnel_data_detection"
+version = "0.1.0"
+description = ""
+authors = ["NourKired <n.kired@okp4.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^1.4.1"
+nltk = "^3.7"
+common_regex = "^1.0.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
