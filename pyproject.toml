@@ -11,6 +11,8 @@ nltk = "^3.7"
 common_regex = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+flake8-bugbear = "^21.11.29"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

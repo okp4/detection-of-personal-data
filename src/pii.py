@@ -3,7 +3,8 @@ import nltk
 import re
 from common_regex import CommonRegex
 
-cities = list(set(pd.read_csv("cities_.csv").dropna()['0'].values))
+
+cities = list(set(pd.read_csv("src/cities_.csv").dropna()['0'].values))
 
 
 def preprocess(sent):
@@ -12,7 +13,7 @@ def preprocess(sent):
     return sent
 
 
-grammar = """ 
+grammar = """
         LC: {<NNP>*<CD><NN|NNP|NNS|JJ|NNPS|,|.>{2}(<NN|NNP|NNS|NNPS|JJ|,|.>+<CD>?<NNP>*)*.*}
 """
 
@@ -42,7 +43,7 @@ def funct_(sent: str):
         try:
             if w in cities:
                 return sent
-        except:
+        except Exception:
             pass
     return None
 
@@ -70,7 +71,7 @@ def pii(txt : str) -> dict:
         if len(text_labelised_loc) != 0:
             text_labelised['Adresse'] = text_labelised_loc
         return text_labelised
-    except:
+    except Exception:
         pass
 
 
@@ -85,6 +86,6 @@ def count_labels(df: pd.DataFrame) -> dict:
                         dict_label[key] += 1
                     else:
                         dict_label[key] = 1
-        except:
+        except Exception :
             pass
     return dict(sorted(dict_label.items(), key=lambda item: -item[1]))
