@@ -24,5 +24,3 @@ pii_res = count_labels(test_df)
 print('pii_res')
 print(pii_res)
 print('')
-
-
