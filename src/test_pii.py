@@ -1,7 +1,8 @@
 import pandas as pd
 import os
+from pii import *
 os.chdir(os.getcwd() + '/src/')
-exec(open("pii.py").read())
+# exec(open("pii.py").read())
 #cities = list(set(pd.read_csv("src/cities_.csv").dropna()['0'].values))
 
 print('')
