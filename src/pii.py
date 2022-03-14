@@ -3,20 +3,14 @@ import nltk
 import re
 from common_regex import CommonRegex
 
-
-cities = list(set(pd.read_csv("src/cities_.csv").dropna()['0'].values))
-
-
 def preprocess(sent):
     sent = nltk.word_tokenize(sent)
     sent = nltk.pos_tag(sent)
     return sent
 
-
 grammar = """
         LC: {<NNP>*<CD><NN|NNP|NNS|JJ|NNPS|,|.>{2}(<NN|NNP|NNS|NNPS|JJ|,|.>+<CD>?<NNP>*)*.*}
 """
-
 
 def license_plate(text : str) -> list:
     license_plate = []
@@ -51,7 +45,6 @@ def funct_(sent: str):
 def pii(txt : str) -> dict:
     try:
         text_labelised = {}
-        text_labelised_loc = []
         persons = findPeople(txt)
         parsed_text = CommonRegex(txt)
         sent = preprocess(txt)
@@ -73,7 +66,6 @@ def pii(txt : str) -> dict:
         return text_labelised
     except Exception:
         pass
-
 
 def count_labels(df: pd.DataFrame) -> dict:
     dict_label = {}
