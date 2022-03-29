@@ -11,7 +11,7 @@ https://adresse.data.gouv.fr/donnees-nationales for example ?
 In the same manner as for addresses, company data can be verified from official sources
 
 ### First and last names
-Names can be verified from a downloaded database based on exact match (or a scoring)
+Names can be verified from a downloaded database based on exact match (or a scoring), we can also translate them and see if they remain the same. 
 
 ### Stopwords 
 Stop words should be removed to facilitate all tasks
