@@ -16,17 +16,6 @@ NLTK is a leading platform for building Python programs to work with human langu
 
 A regular expression is a method used in programming for pattern matching. Regular expressions provide a flexible and concise means to match strings of text.
 
-## Organization of the repository
-
-The project is organized as follows:
-```text
-
-├── README.md
-└── src                   
-    └── pii.py   
-
-```
-
 ## System requirements
 ### Python
 

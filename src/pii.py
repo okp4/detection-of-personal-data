@@ -3,6 +3,8 @@ import nltk
 import re
 from common_regex import CommonRegex
 
+cities = list(set(pd.read_csv("./src/cities_.csv").dropna()['0'].values))
+
 
 def preprocess(sent):
     sent = nltk.word_tokenize(sent)
