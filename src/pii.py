@@ -13,26 +13,26 @@ def preprocess(sent):
 
 
 grammar = """
-        LC: {<NNP>*<CD><NN|NNP|NNS|JJ|NNPS|,|.>{2}(<NN|NNP|NNS|NNPS|JJ|,|.>+<CD>?<NNP>*)*.*}
+        LC: {<NNP>*<CD><NN|NNP|NNS|JJ|NNPS|DT|CC|TO|RB|,|.>{2}(<NN|NNP|NNS|NNPS|JJ|IN|DT|CC|TO|RB|,|.>+<CD>?<NNP>*)*.*}
 """
 
 
 def license_plate(text : str) -> list:
     license_plate = []
     for m in re.finditer(r"[A-Z]{2}[-][0-9]{3}[-][A-Z]{2}", text):
-        license_plate.append('%02d-%02d: %s' % (m.start(), m.end(), m.group(0)))
+        license_plate.append(m.group(0))
     return license_plate
 
 
 def phone_number(text: str) -> list:
     phone_number = []
-    for m in re.finditer(r"((((\+|00)(\d{2}|\d{3}))[-.\s]?\d[-.\s]?)|(?:\d{2}[-.\s]?))(\d{2}[-.\s]?){4}", text):
-        phone_number.append('%02d-%02d: %s' % (m.start(), m.end(), m.group(0)))
+    for m in re.finditer(r"((((\+|00)(\d{2}|\d{3}))[-.\s]?\d[-.\s]?)|(?:\d{2}[-.\s]?))(\d{2}[-.\s]?){4} ", text):
+        phone_number.append(m.group(0)[:-1])
     return phone_number
 
 
 def findPeople(s: str) -> list:
-    p1 = [x.group(0) for x in re.compile(r"(mr|dr|mrs|dr|jr|sir|Mlle|Mme|M|Mr|M|Dr|mme|Sir|Jr|Mrs|name is|(he|He) is|(she|She) is|(elle|Elle) est|(Il|il) est)(.|\s)([A-Z]\w+( [A-Z]\w+)+)").finditer(s)]
+    p1 = [x.group(0) for x in re.compile(r"(mr|dr|mrs|dr|jr|sir|Mlle|Mme|M|Mr|M|Dr|mme|Sir|Jr|Mrs|name is|nom est|prenom est|(he|He) is|(she|She) is|(elle|Elle) est|(Il|il) est)(.|\s)([A-Z]\w+( [A-Z]\w+)+)").finditer(s)]
     p2 = [y.group(0) for y in re.compile(r"( [A-Z]\w+)+? [A-Z]\w+ (is|est|a)").finditer(s)]
     return p1 + p2
 
@@ -71,6 +71,13 @@ def pii(txt : str) -> dict:
         return text_labelised
     except Exception:
         pass
+
+
+def labs_df(df: pd.DataFrame) -> list:
+    dict_label = []
+    for col in df.columns:
+        dict_label += [df[col].apply(pii)]
+    return dict_label
 
 
 def count_labels(df: pd.DataFrame) -> dict:
