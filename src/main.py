@@ -1,7 +1,6 @@
 import argparse
 import __init__ as init
-from pii import pii
-from functions import args_2_para
+from functions import args_2_para, pii
 
 # %% defined command line options for input_file name, this also generates --help and error handling
 CLI = argparse.ArgumentParser()
@@ -39,12 +38,9 @@ CLI.add_argument(
     help="bool, run the program in the dry mode",
     action="store_true")
 
-
 args = CLI.parse_args()
-
 
 file, out_dir, overwrite, dry_run, col_tolr, nb_mergrow, tresh_nan, prct_insign, save_dropped = args_2_para(args)
 pii(file, out_dir, overwrite, dry_run)
-
 
 # %%
