@@ -20,6 +20,8 @@ def detect_language(text):
 def translate(text):
     trg="en"
     src= detect_language(text)
+    if src == "en":
+        return text
     model_name = f"Helsinki-NLP/opus-mt-{src}-{trg}"
     model = MarianMTModel.from_pretrained(model_name)
     tokenizer = MarianTokenizer.from_pretrained(model_name)

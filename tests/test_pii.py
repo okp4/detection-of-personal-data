@@ -1,7 +1,7 @@
-from personal_data_detection import __version__
+from src.__init__ import __version__
 import pandas as pd
 # import os
-from functions import count_labels
+from src.functions import count_labels
 import unittest
 import sys
 
