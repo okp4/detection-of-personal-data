@@ -6,7 +6,7 @@ import logging
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(funcName)s - %(message)s ', level=logging.INFO)
 
-cities = list(set(pd.read_csv("./src/cities_.csv").dropna()['0'].values))
+# cities = list(set(pd.read_csv("./src/cities_.csv").dropna()['0'].values))
 
 
 def args_2_para(args):
