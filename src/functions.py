@@ -72,8 +72,8 @@ def findNumber(s: str) -> bool:
 # def findBirthday(s: str) -> bool:
 #     return [y.group(0) for y in re.compile(r"(([0-2])\d)[\/\-.](([0-2])\d)[\/\-.][19|20]\d{3}").finditer(s)] != []
 
-def tresh(d)-> list:
-    result= [key for key,value in d.items()if value >0.5 and key not in ('Driving_license','personal','not_personal')]
+def tresh(d : dict, tresh: float)-> list:
+    result= [key for key,value in d.items()if value >tresh and key not in ('Driving_license','personal','not_personal')]
     result+=['Driving_license'] if d['Driving_license'] > 0.6 else []
     return result
 
