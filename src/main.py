@@ -19,31 +19,36 @@ def version():
 
 @cli.command
 @click.option(
-    "-s", "--sentence", "sentence", type=str, required=True, help="sentence to process"
+    "-s",
+    "--sentence",
+    "sentence",
+    type=str,
+    required=True,
+    help="sentence to process"
 )
 @click.option(
     "-tr",
-    "--tresh",
-    "tresh",
+    "--thresh",
+    "thresh",
     type=float,
     default=0.9,
     show_default=True,
-    help="the minimum probability of prvate data",
+    help="the minimum probability of private data",
 )
 def pii_detect(
     sentence,
-    tresh,
+    thresh,
 ):
     """Represents cli 'pii_detect' command"""
-    validate_args(sentence, tresh)
+    validate_args(sentence, thresh)
     pipe = pipeline("zero-shot-classification",
                     model="facebook/bart-large-mnli")
-    res = predict(pipe, sentence, tresh)
+    res = predict(pipe, sentence, thresh)
     print(res)
 
 
 def validate_args(
-    sentence: str, tresh: float
+    sentence: str, thresh: float
 ):
     return True
 

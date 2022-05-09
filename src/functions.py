@@ -26,12 +26,12 @@ pii_ = [(name, 'person'), (birth, 'birth'), (cookie, 'cookie'), (phone, 'phone')
         (not_personal, 'not_personal'), (passport, "passport"), (Driving_license, "Driving_license"), (social_security_number, "social_security_number"), (Tax_file_number, "Tax_file_number"), (credit_card, "credit_card")]
 
 
-def predict(pipeline, sentence : str, treshold : float):
+def predict(pipeline, sentence : str, threshold : float):
     text_translated = translate(sentence)
     result_details = pipeline(text_translated, candidate_labels, multi_label=True)
     result_details = dict(zip(result_details['labels'], result_details['scores']))
     result = {name : np.mean(list(map(result_details.get, lst))) for lst, name in pii_}
-    pii_detected = {name : result[name] for name in tresh(result, treshold)}
+    pii_detected = {name : result[name] for name in thresh(result, threshold)}
     pii_detected = check(pii_detected, sentence)
     if license_plate(sentence):
         pii_detected["license_plate"] = 0.9
@@ -78,8 +78,8 @@ def findNumber(s: str) -> bool:
 #     return [y.group(0) for y in re.compile(r"(([0-2])\d)[\/\-.](([0-2])\d)[\/\-.][19|20]\d{3}").finditer(s)] != []
 
 
-def tresh(d : dict, tresh: float) -> list:
-    result = [key for key, value in d.items()if value > tresh and key not in ('Driving_license', 'personal', 'not_personal')]
+def thresh(d : dict, thresh: float) -> list:
+    result = [key for key, value in d.items()if value > thresh and key not in ('Driving_license', 'personal', 'not_personal')]
     result += ['Driving_license'] if d['Driving_license'] > 0.6 else []
     return result
 
