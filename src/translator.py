@@ -4,7 +4,7 @@ import time
 import torch
 
 
-trg="en"
+trg = "en"
 src = "fr"
 model_dt = AutoModelForSequenceClassification.from_pretrained("papluca/xlm-roberta-base-language-detection")
 tokenizer_dt = AutoTokenizer.from_pretrained("papluca/xlm-roberta-base-language-detection")
@@ -22,15 +22,14 @@ def detect_language(text):
     return model_dt.config.id2label[predicted_class_id]
 
 
-
 def translate(text):
     time.sleep(1)
     # trg="en"
-    src= detect_language(text)
+    src = detect_language(text)
     if src == "en":
         return text
     sample_text = text
     batch = tokenizer([sample_text], return_tensors="pt")
     generated_ids = model.generate(**batch)
-    result =tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    result = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
     return result

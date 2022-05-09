@@ -1,46 +1,52 @@
-import argparse
+import click
+from transformers import pipeline
+
+from functions import predict
 import __init__ as init
-from functions import args_2_para, pii
 
-# %% defined command line options for input_file name, this also generates --help and error handling
-CLI = argparse.ArgumentParser()
-CLI.add_argument(
-    "--input_file",   # name on the CLI - drop the `--` for positional/required parameters
-    # nargs="*",  # 0 or more values expected => creates a list
-    type=str,
-    required=True,
-    default='',  # default if nothing is provided
-    help='the file to be processed',
+
+@click.group
+def cli():
+    """Represents the root cli function"""
+    pass
+
+
+@cli.command
+def version():
+    """Represents cli 'version' command"""
+    click.echo(init.__version__)
+
+
+@cli.command
+@click.option(
+    "-s", "--sentence", "sentence", type=str, required=True, help="sentence to process"
 )
-
-# %% defined command line options for output_dir name, this also generates --help and error handling
-CLI.add_argument(
-    "--output_dir",   # name on the CLI - drop the `--` for positional/required parameters
-    # nargs="*",  # 0 or more values expected => creates a list
-    type=str,
-    default='',  # default if nothing is provided
-    help='the path to results',
+@click.option(
+    "-tr",
+    "--tresh",
+    "tresh",
+    type=float,
+    default=0.9,
+    show_default=True,
+    help="the minimum probability of prvate data",
 )
+def pii_detect(
+    sentence,
+    tresh,
+):
+    """Represents cli 'pii_detect' command"""
+    validate_args(sentence, tresh)
+    pipe = pipeline("zero-shot-classification",
+                    model="facebook/bart-large-mnli")
+    res = predict(pipe, sentence, tresh)
+    print(res)
 
-CLI.add_argument(
-    '--overwrite',
-    action="store_true",
-    help='Bool type')
+
+def validate_args(
+    sentence: str, tresh: float
+):
+    return True
 
 
-CLI.add_argument(
-    '-v', '--version',
-    action='version',
-    version="%(prog)s (" + init.__version__ + ")")
-
-CLI.add_argument(
-    '-d', '--dry-run',
-    help="bool, run the program in the dry mode",
-    action="store_true")
-
-args = CLI.parse_args()
-
-file, out_dir, overwrite, dry_run, col_tolr, nb_mergrow, tresh_nan, prct_insign, save_dropped = args_2_para(args)
-pii(file, out_dir, overwrite, dry_run)
-
-# %%
+if __name__ == "__main__":
+    cli()
