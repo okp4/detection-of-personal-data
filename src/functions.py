@@ -1,4 +1,4 @@
-from translator import translate
+from pii_translator import translate
 import numpy as np
 import re
 import logging
