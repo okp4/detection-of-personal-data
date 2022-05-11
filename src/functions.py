@@ -4,9 +4,11 @@ import logging
 import pandas as pd
 from tqdm import tqdm
 from transformers import pipeline
+from joblib import Parallel, delayed
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(funcName)s - %(message)s ', level=logging.INFO)
-
+pipe = pipeline("zero-shot-classification",
+                    model="facebook/bart-large-mnli")
 
 name = ["person's name", "person"]
 birth = ["birthday", "private"]
@@ -27,6 +29,29 @@ candidate_labels = name + cookie + phone + mail + location + health + personal +
 pii_ = [(name, 'person'), (birth, 'birth'), (cookie, 'cookie'), (phone, 'phone'), (mail, 'mail'), (location, 'location'), (health, 'health'), (personal, 'personal'),
         (not_personal, 'not_personal'), (passport, "passport"), (Driving_license, "Driving_license"), (social_security_number, "social_security_number"), (Tax_file_number, "Tax_file_number"), (credit_card, "credit_card")]
 
+
+# def pii_detect(
+#     df: pd.DataFrame,
+#     thresh =0.9,
+# ):
+#     """Represents cli 'pii_detect' command"""
+#     # validate_args(sentenÒce, thresh)
+#     results = Parallel(n_jobs=7)(delayed(predict)(sent, thresh) for sent in tqdm(df['sentence'],total=len(df)))
+#     return(results)
+# def predict(sentence : str, threshold : float):
+#     result_details = pipe(sentence, candidate_labels, multi_label=True)
+#     result_details = dict(zip(result_details['labels'], result_details['scores']))
+#     result = {name : np.mean(list(map(result_details.get, lst))) for lst, name in pii_}
+#     pii_detected = {name : result[name] for name in thresh(result, threshold)}
+#     pii_detected = check(pii_detected, sentence)
+#     if license_plate(sentence):
+#         pii_detected["license_plate"] = 0.9
+#     if pii_detected == {}:
+#         mean = 0
+#     else:
+#         mean = np.mean(list(pii_detected.values()))
+#     del result_details, result
+#     return int(pii_detected != {})
 def pii_detect(
     df: pd.DataFrame,
     thresh =0.9,
@@ -35,13 +60,9 @@ def pii_detect(
     # validate_args(sentence, thresh)
     res=[]
     for sent in tqdm(df['sentence'],total=len(df)):
-        l=predict(sent,thresh)[0]
-        res.append(l)
-    return(res)
-    
-pipe = pipeline("zero-shot-classification",
-                    model="facebook/bart-large-mnli")
-  
+        res.append(predict(sent,thresh)[0])
+    return(res) 
+
 def predict(sentence : str, threshold : float):
     result_details = pipe(sentence, candidate_labels, multi_label=True)
     result_details = dict(zip(result_details['labels'], result_details['scores']))
@@ -55,7 +76,9 @@ def predict(sentence : str, threshold : float):
     else:
         mean = np.mean(list(pii_detected.values()))
     del result_details, result
-    return int(pii_detected != {}), mean
+    return int(pii_detected != {}),mean
+
+
 
 
 def license_plate(text : str) -> bool:
