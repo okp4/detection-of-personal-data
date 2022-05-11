@@ -1,7 +1,9 @@
-from pii_translator import translate
 import numpy as np
 import re
 import logging
+import pandas as pd
+from tqdm import tqdm
+from transformers import pipeline
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(funcName)s - %(message)s ', level=logging.INFO)
 
@@ -25,10 +27,23 @@ candidate_labels = name + cookie + phone + mail + location + health + personal +
 pii_ = [(name, 'person'), (birth, 'birth'), (cookie, 'cookie'), (phone, 'phone'), (mail, 'mail'), (location, 'location'), (health, 'health'), (personal, 'personal'),
         (not_personal, 'not_personal'), (passport, "passport"), (Driving_license, "Driving_license"), (social_security_number, "social_security_number"), (Tax_file_number, "Tax_file_number"), (credit_card, "credit_card")]
 
-
-def predict(pipeline, sentence : str, threshold : float):
-    text_translated = translate(sentence)
-    result_details = pipeline(text_translated, candidate_labels, multi_label=True)
+def pii_detect(
+    df: pd.DataFrame,
+    thresh =0.9,
+):
+    """Represents cli 'pii_detect' command"""
+    # validate_args(sentence, thresh)
+    res=[]
+    for sent in tqdm(df['sentence'],total=len(df)):
+        l=predict(sent,thresh)[0]
+        res.append(l)
+    return(res)
+    
+pipe = pipeline("zero-shot-classification",
+                    model="facebook/bart-large-mnli")
+  
+def predict(sentence : str, threshold : float):
+    result_details = pipe(sentence, candidate_labels, multi_label=True)
     result_details = dict(zip(result_details['labels'], result_details['scores']))
     result = {name : np.mean(list(map(result_details.get, lst))) for lst, name in pii_}
     pii_detected = {name : result[name] for name in thresh(result, threshold)}
@@ -39,7 +54,7 @@ def predict(pipeline, sentence : str, threshold : float):
         mean = 0
     else:
         mean = np.mean(list(pii_detected.values()))
-    del text_translated, result_details, result
+    del result_details, result
     return int(pii_detected != {}), mean
 
 
@@ -48,14 +63,6 @@ def license_plate(text : str) -> bool:
     for m in re.finditer(r"[A-Z]{2}[-][0-9]{3}[-][A-Z]{2}", text):
         license_plate.append(m.group(0))
     return license_plate != []
-
-
-def phone_number(text: str) -> bool:
-    phone_number = []
-    for m in re.finditer(r"((((\+|00)(\d{2}|\d{3}))[-.\s]?\d[-.\s]?)|(?:\d{2}[-.\s]?))(\d{2}[-.\s]?){4} ", text):
-        phone_number.append(m.group(0)[:-1])
-    return phone_number
-
 
 def findBirthday(s: str) -> list:
     p1 = [y.group(0) for y in re.compile(r"\d{4}").finditer(s)]
@@ -73,10 +80,6 @@ def findSecurityNumber(s: str) -> bool:
 
 def findNumber(s: str) -> bool:
     return [y.group(0) for y in re.compile(r"\d{4}\d*").finditer(s)] != []
-
-# def findBirthday(s: str) -> bool:
-#     return [y.group(0) for y in re.compile(r"(([0-2])\d)[\/\-.](([0-2])\d)[\/\-.][19|20]\d{3}").finditer(s)] != []
-
 
 def thresh(d : dict, thresh: float) -> list:
     result = [key for key, value in d.items()if value > thresh and key not in ('Driving_license', 'personal', 'not_personal')]
