@@ -1,6 +1,7 @@
 import click
 from transformers import pipeline
-
+from joblib import Parallel, delayed
+import pandas as pd
 from functions import predict
 import __init__ as init
 
@@ -36,21 +37,21 @@ def version():
     help="the minimum probability of private data",
 )
 def pii_detect(
-    sentence,
-    thresh,
+    df: pd.DataFrame,
+    thresh =0.9,
 ):
     """Represents cli 'pii_detect' command"""
-    validate_args(sentence, thresh)
+    # validate_args(sentence, thresh)
     pipe = pipeline("zero-shot-classification",
                     model="facebook/bart-large-mnli")
-    res = predict(pipe, sentence, thresh)
+    res= [Parallel()(delayed(predict)(pipe, sentence, thresh) for sentence in df['sentence'])]
     print(res)
 
 
-def validate_args(
-    sentence: str, thresh: float
-):
-    return True
+# def validate_args(
+#     sentence: str, thresh: float
+# ):
+#     return True
 
 
 if __name__ == "__main__":
