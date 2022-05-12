@@ -1,11 +1,8 @@
-import pandas as pd
-import logging
-from tqdm import tqdm
-from joblib import Parallel, delayed
 import numpy as np
 import re
+import pandas as pd
+from tqdm import tqdm
 from transformers import pipeline
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(funcName)s - %(message)s ', level=logging.INFO)
 
 name = ["person's name", "person"]
 birth = ["birthday", "private"]
@@ -25,10 +22,14 @@ credit_card = ['credit card number']
 candidate_labels = name + cookie + phone + mail + location + health + personal + not_personal + birth + passport + Driving_license + social_security_number + Tax_file_number + credit_card
 pii_ = [(name, 'person'), (birth, 'birth'), (cookie, 'cookie'), (phone, 'phone'), (mail, 'mail'), (location, 'location'), (health, 'health'), (personal, 'personal'),
         (not_personal, 'not_personal'), (passport, "passport"), (Driving_license, "Driving_license"), (social_security_number, "social_security_number"), (Tax_file_number, "Tax_file_number"), (credit_card, "credit_card")]
-    
-      
-def predict(pipeline,sentence : str, threshold = 0.9):
-    result_details = pipeline(sentence, candidate_labels, multi_label=True)
+
+
+
+pipe = pipeline("zero-shot-classification",
+                    model="facebook/bart-large-mnli")
+  
+def predict(sentence : str, threshold = 0.9):
+    result_details = pipe(sentence, candidate_labels, multi_label=True)
     result_details = dict(zip(result_details['labels'], result_details['scores']))
     result = {name : np.mean(list(map(result_details.get, lst))) for lst, name in pii_}
     pii_detected = {name : result[name] for name in thresh(result, threshold)}
@@ -42,16 +43,6 @@ def predict(pipeline,sentence : str, threshold = 0.9):
     del result_details, result
     return int(pii_detected != {})
 
-def pii_detect(
-    df: pd.DataFrame,
-    th =0.9,
-):
-    """Represents cli 'pii_detect' command"""
-    pipe = pipeline("zero-shot-classification",
-                    model="facebook/bart-large-mnli") 
-    
-    predicted_label= [predict(pipe,sent,th) for sent in tqdm(df['sentence'])]
-    return predicted_label
 
 def license_plate(text : str) -> bool:
     license_plate = []
