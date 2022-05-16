@@ -1,24 +1,21 @@
 import numpy as np
 import re
 import logging
-import pandas as pd
-from tqdm import tqdm
-from transformers import pipeline
+
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s ",
     level=logging.INFO,
 )
 # classes and their subclasses to detect
-name: list = ["person's name", "person"]
-birth: list = ["birthday", "private"]
-persons: list = ["persons"]
+name: list = ["person's name", "person", "name"]
+birth: list = ["birthday"]
 # ip=["Internet protocol (IP) addresses","IP adress"]
 cookie: list = ["cookie identifiers", "a cookie"]
-phone: list = ["phone numbers", "phone number", "telphone number"]
+phone: list = ["phone number", "phone"]
 persons: list = ["persons"]
 mail: list = ["mail addresses", "mail address", "mail"]
-location: list = ["location adress", "private postal address"]
+location: list = ["location", "postal address"]
 health: list = [
     "health data",
     "medical records",
@@ -68,21 +65,6 @@ pii_: list = [
 ]
 
 
-def pii_detect(
-    df: pd.DataFrame,
-    thresh=0.9,
-) -> list:
-    """Represents cli 'pii_detect' command"""
-    # validate_args(sentence, thresh)
-    pipe = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
-
-    detected_labels: list = [
-        predict(pipe, sent, thresh) for sent in tqdm(df["sentence"], total=len(df))
-    ]
-
-    return detected_labels
-
-
 def predict(
     pipeline,
     sentence: str,
@@ -98,18 +80,18 @@ def predict(
     result_details = pipeline(sentence, candidate_labels, multi_label=True)
     result_details: dict = dict(zip(result_details["labels"], result_details["scores"]))
     result: dict = {
-        name: np.mean(list(map(result_details.get, lst))) for lst, name in pii_
+        name: round(np.mean(list(map(result_details.get, lst))), 2)
+        for lst, name in pii_
     }
+    print(result)
     pii_detected: dict = {name: result[name] for name in thresh(result, threshold)}
     pii_detected: dict = check(pii_detected, sentence)
     if license_plate(sentence):
         pii_detected["license_plate"] = 0.9
-    # if pii_detected == {}:
-    #     mean = 0
-    # else:
-    #     mean: float = np.mean(list(pii_detected.values()))
-    del result_details, result
-    return int(pii_detected != {})
+    detected = int(pii_detected != {})
+    if detected > 0:
+        return (detected, pii_detected), sentence
+    return None, None
 
 
 def license_plate(text: str) -> bool:
@@ -164,9 +146,23 @@ def thresh(detected_labels: dict, treshold: float) -> list:
     result: list = [
         key
         for key, value in detected_labels.items()
-        if value > treshold and key not in ("Driving_license")
+        if value > treshold
+        and key
+        not in ("Driving_license", "", "mail", "phone", "passport", "birth", "persons")
     ]
-    result += ["Driving_license"] if detected_labels["Driving_license"] > 0.6 else []
+    result += [
+        key
+        for key, value in detected_labels.items()
+        if value > 0.8
+        and key in ("person", "mail", "phone", "passport", "birth", "persons")
+    ]
+    result += [
+        key
+        for key, value in detected_labels.items()
+        if value > 0.6 and key in ("person", "Driving_license")
+    ]
+    if "persons" in result and "person" in result:
+        result.remove("persons")
     return result
 
 

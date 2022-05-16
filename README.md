@@ -4,9 +4,8 @@
 
 
 ## Foreword
-This repository contains a service to retrieve personal data such as first and last names, license plates, phone numbers, emails, postal addresses from DataFrames and return a dictionary of labels that are most often found on the dataframe. 
-The labels are: person, emails, address, phones and license_plate.
-
+This repository contains a service to detect personal data such as: name, phone, email, mailing address, health information, birth information, passport number, driver's license number, social security number, tax file number, and credit card number of the person. The input to the service is a text file, i.e. any text file such as .txt, .csv, etc. and returns a json. 
+The json indicates whether personal information was detected. If so, the json must also contain, for tokens (phrases) that contain personal information, the detected tags (referenced above).
 ## Technology
 
 ### Nltk
@@ -16,12 +15,36 @@ NLTK is a leading platform for building Python programs to work with human langu
 
 A regular expression is a method used in programming for pattern matching. Regular expressions provide a flexible and concise means to match strings of text.
 
+### [Transformers](https://huggingface.co/docs/transformers/index)
+State-of-the-art Machine Learning for PyTorch, TensorFlow and JAX.
+Transformers provides APIs to easily download and train state-of-the-art pretrained models. 
+
+
+## Usage
+
+The usage is given as follows:
+
+```sh
+Usage: main.py pii-detect [OPTIONS]
+ﬂ
+  Represents cli 'pii_detect' command
+
+Options:
+  -i, --input TEXT     path to text file  [required]
+  -o, --output TEXT    output directory where json file will be written
+                       [default: .]
+  -tr, --thresh FLOAT  the minimum probability of private data [default: 0.9]
+  --help               Show this message and exit.
+
+```
 ## System requirements
 ### Python
 
 The repository targets python `3.9` and higher.
-
-
+```sh
+import nltk
+nltk.download('punkt')
+```
 ### Poetry
 
 The repository uses [Poetry](https://python-poetry.org) as python packaging and dependency management. Be sure to have it properly installed before.
