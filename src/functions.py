@@ -1,6 +1,7 @@
 import numpy as np
 import re
 import logging
+from common_regex import CommonRegex
 
 
 logging.basicConfig(
@@ -83,12 +84,13 @@ def predict(
         name: round(np.mean(list(map(result_details.get, lst))), 2)
         for lst, name in pii_
     }
-    print(result)
     pii_detected: dict = {name: result[name] for name in thresh(result, threshold)}
     pii_detected: dict = check(pii_detected, sentence)
     if license_plate(sentence):
-        pii_detected["license_plate"] = 0.9
+        pii_detected["license_plate"] = 0.99
     detected = int(pii_detected != {})
+    if findMail(sentence):
+        pii_detected["mail"]=0.99
     if detected > 0:
         return (detected, pii_detected), sentence
     return None, None
@@ -112,7 +114,13 @@ def findBirthday(text: str) -> list:
     p2: list = [y.group(0) for y in re.compile(r"\d{2}").finditer(text)]
     return (p1 and p2) != []
 
-
+def findMail(text: str) -> list:
+    """Documentation:
+    This function returns True if the birthday pattern was detected in the text.
+    """
+    parsed_text = CommonRegex(text)
+    return len(parsed_text.emails) != 0
+        
 def findPassport(text: str) -> bool:
     """Documentation:
     This function returns True if the passport pattern was detected in the text.
@@ -133,7 +141,7 @@ def findNumber(text: str) -> bool:
     """Documentation:
     This function returns True if the number pattern (at least 4 numbers) was detected in the text.
     """
-    return [y.group(0) for y in re.compile(r"\d{4}\d*").finditer(text)] != []
+    return [y.group(0) for y in re.compile(r"\d{4}.\d*").finditer(text)] != []
 
 
 def thresh(detected_labels: dict, treshold: float) -> list:
@@ -154,12 +162,12 @@ def thresh(detected_labels: dict, treshold: float) -> list:
         key
         for key, value in detected_labels.items()
         if value > 0.8
-        and key in ("person", "mail", "phone", "passport", "birth", "persons")
+        and key in ("person", "mail", "phone", "birth", "persons")
     ]
     result += [
         key
         for key, value in detected_labels.items()
-        if value > 0.6 and key in ("person", "Driving_license")
+        if value > 0.6 and key in ("Driving_license","passport")
     ]
     if "persons" in result and "person" in result:
         result.remove("persons")
