@@ -88,12 +88,13 @@ def predict(
     pii_detected: dict = check(pii_detected, sentence)
     if license_plate(sentence):
         pii_detected["license_plate"] = 0.99
-    detected = int(pii_detected != {})
     if findMail(sentence):
         pii_detected["mail"]=0.99
-    if detected > 0:
-        return (detected, pii_detected), sentence
-    return None, None
+    detected = int(pii_detected != {})
+    return detected
+    # if detected > 0:
+    #     return (detected, pii_detected), sentence
+    # return None, None
 
 
 def license_plate(text: str) -> bool:
@@ -158,6 +159,7 @@ def thresh(detected_labels: dict, treshold: float) -> list:
         and key
         not in ("Driving_license", "", "mail", "phone", "passport", "birth", "persons")
     ]
+    
     result += [
         key
         for key, value in detected_labels.items()
