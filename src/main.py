@@ -68,12 +68,11 @@ def pii_detect(
     thresh,
 ) -> list:
     """Represents cli 'pii_detect' command"""
-    # validate_args(sentence, thresh)
-    text = " ".join(list(pd.read_csv(input_file, delimiter=";")))
-    df = sent_tokenize(text)
+    with open(input_file) as f:
+        list_sent = [line.rstrip() for line in f]
     pipe = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
     detected_labels: list = [
-        predict(pipe, sent, thresh) for sent in tqdm(df, total=len(df))
+        predict(pipe, sent, thresh) for sent in tqdm(list_sent, total=len(list_sent))
     ]
     results = list(zip(*detected_labels))[0]
     results = list(filter(None, results))
