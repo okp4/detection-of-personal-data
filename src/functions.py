@@ -89,7 +89,7 @@ def predict(
     if license_plate(sentence):
         pii_detected["license_plate"] = 0.99
     if findMail(sentence):
-        pii_detected["mail"]=0.99
+        pii_detected["mail"] = 0.99
     detected = int(pii_detected != {})
     return detected
     # if detected > 0:
@@ -115,13 +115,15 @@ def findBirthday(text: str) -> list:
     p2: list = [y.group(0) for y in re.compile(r"\d{2}").finditer(text)]
     return (p1 and p2) != []
 
+
 def findMail(text: str) -> list:
     """Documentation:
     This function returns True if the birthday pattern was detected in the text.
     """
     parsed_text = CommonRegex(text)
     return len(parsed_text.emails) != 0
-        
+
+
 def findPassport(text: str) -> bool:
     """Documentation:
     This function returns True if the passport pattern was detected in the text.
@@ -159,17 +161,16 @@ def thresh(detected_labels: dict, treshold: float) -> list:
         and key
         not in ("Driving_license", "", "mail", "phone", "passport", "birth", "persons")
     ]
-    
+
     result += [
         key
         for key, value in detected_labels.items()
-        if value > 0.8
-        and key in ("person", "mail", "phone", "birth", "persons")
+        if value > 0.8 and key in ("person", "mail", "phone", "birth", "persons")
     ]
     result += [
         key
         for key, value in detected_labels.items()
-        if value > 0.6 and key in ("Driving_license","passport")
+        if value > 0.6 and key in ("Driving_license", "passport")
     ]
     if "persons" in result and "person" in result:
         result.remove("persons")
