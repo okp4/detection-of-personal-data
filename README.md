@@ -1,10 +1,10 @@
+![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) 
+[![PyPI](https://img.shields.io/pypi/v/converter-excel-to-csv)](https://pypi.org/project/converter-excel-to-csv/) [![conventional commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org) [![license](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 # Personal Data Detection (PDD)
 
-![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
-
-
-## Foreword
-This repository contains a service to detect personal data such as: name, phone, email, mailing address, health information, birth information, passport number, driver's license number, social security number, tax file number, and credit card number of the person. The input to the service is a text file, i.e. any text file such as .txt, .csv, etc. and returns a json. 
+## Purpose
+This repository contains detection sensible information service.
+The purpose of this service is to detect personal data such as: name, phone, email, mailing address, health information, birth information, passport number, driver's license number, social security number, tax file number, and credit card number of the person. The input to the service is a text file, i.e. any text file such as .txt, .csv, etc. and returns a json. 
 The json indicates whether personal information was detected. If so, the json must also contain, for tokens (phrases) that contain personal information, the detected tags (referenced above).
 ## Technology
 
@@ -26,17 +26,27 @@ The usage is given as follows:
 
 ```sh
 Usage: main.py pii-detect [OPTIONS]
-ﬂ
+
   Represents cli 'pii_detect' command
 
 Options:
-  -i, --input TEXT     path to text file  [required]
-  -o, --output TEXT    output directory where json file will be written
-                       [default: .]
-  -tr, --thresh FLOAT  the minimum probability of private data [default: 0.9]
-  --help               Show this message and exit.
+  -i, --input TEXT               path to text file  [required]
+  -o, --output TEXT              output directory where json file will be
+                                 written  [default: .]
+  -tr, --thresh <TEXT FLOAT>...  the minimum probability of private data for
+                                 labels
+  -f, --force                    overwrite existing file
+  --dry-run                      passthrough, will not write anything
+  --help                         Show this message and exit.
 
 ```
+
+
+
+```shell
+ poetry run python3 src/main.py pii-detect -tr person 0.3 -tr passport 0.3 -i ./data_test/inputs/personal_data_db.csv -o ./data_test/outputs -f 
+ ```
+
 ## System requirements
 ### Python
 

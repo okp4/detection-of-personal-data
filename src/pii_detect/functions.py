@@ -2,6 +2,8 @@ import numpy as np
 import re
 import logging
 from common_regex import CommonRegex
+import os
+import json
 
 
 logging.basicConfig(
@@ -26,9 +28,9 @@ health: list = [
     "Medical Procedure identification codes",
 ]
 passport: list = ["passport", "code"]
-Driving_license: list = ["driving license", "code"]
+driving_licence: list = ["driving license", "code"]
 social_security_number: list = ["social security number"]
-Tax_file_number: list = ["tax file number"]
+tax_file_number: list = ["tax file number"]
 credit_card: list = ["credit card number"]
 
 
@@ -41,9 +43,9 @@ candidate_labels: list = (
     + health
     + birth
     + passport
-    + Driving_license
+    + driving_licence
     + social_security_number
-    + Tax_file_number
+    + tax_file_number
     + credit_card
     + persons
 )
@@ -58,9 +60,9 @@ pii_: list = [
     (location, "location"),
     (health, "health"),
     (passport, "passport"),
-    (Driving_license, "Driving_license"),
+    (driving_licence, "driving_licence"),
     (social_security_number, "social_security_number"),
-    (Tax_file_number, "Tax_file_number"),
+    (tax_file_number, "tax_file_number"),
     (credit_card, "credit_card"),
     (persons, "persons"),
 ]
@@ -90,11 +92,10 @@ def predict(
         pii_detected["license_plate"] = 0.99
     if findMail(sentence):
         pii_detected["mail"] = 0.99
-    detected = int(pii_detected != {})
-    return detected
-    # if detected > 0:
-    #     return (detected, pii_detected), sentence
-    # return None, None
+    detected: int = int(pii_detected != {})
+    if detected > 0:
+        return (detected, pii_detected), sentence
+    return None, None
 
 
 def license_plate(text: str) -> bool:
@@ -147,7 +148,7 @@ def findNumber(text: str) -> bool:
     return [y.group(0) for y in re.compile(r"\d{4}.\d*").finditer(text)] != []
 
 
-def thresh(detected_labels: dict, treshold: float) -> list:
+def thresh(detected_labels: dict, tresholds: float) -> list:
     """Documentation:
     inputs:
         detected_labels: detected labels and their probability
@@ -155,23 +156,9 @@ def thresh(detected_labels: dict, treshold: float) -> list:
     This function only takes into account the labels and their probability that satisfy the condition (probability is higher than the threshold).
     """
     result: list = [
-        key
-        for key, value in detected_labels.items()
-        if value > treshold
-        and key
-        not in ("Driving_license", "", "mail", "phone", "passport", "birth", "persons")
+        key for key, value in detected_labels.items() if value > tresholds[key]
     ]
 
-    result += [
-        key
-        for key, value in detected_labels.items()
-        if value > 0.8 and key in ("person", "mail", "phone", "birth", "persons")
-    ]
-    result += [
-        key
-        for key, value in detected_labels.items()
-        if value > 0.6 and key in ("Driving_license", "passport")
-    ]
     if "persons" in result and "person" in result:
         result.remove("persons")
     return result
@@ -197,24 +184,24 @@ def check(result: dict, text: str) -> dict:
                 pass
             else:
                 result_dict.pop("security_number")
-        elif key == "Driving_license":
+        elif key == "driving_licence":
             if findNumber(text):
-                print("Driving_license checked")
+                print("driving_licence checked")
                 pass
             else:
-                result_dict.pop("Driving_license")
+                result_dict.pop("driving_licence")
         elif key == "credit_card":
             if findNumber(text):
                 print("credit_card checked")
                 pass
             else:
                 result_dict.pop("credit_card")
-        elif key == "Tax_file_number":
+        elif key == "tax_file_number":
             if findNumber(text):
-                print("Tax_file_number checked")
+                print("tax_file_number checked")
                 pass
             else:
-                result_dict.pop("Tax_file_number")
+                result_dict.pop("tax_file_number")
         elif key == "birth":
             if findBirthday(text):
                 print("birth checked")
@@ -222,3 +209,21 @@ def check(result: dict, text: str) -> dict:
             else:
                 result_dict.pop("birth")
     return result_dict
+
+
+def to_json(output: dict, output_path: str, overwrite: bool):
+    """Documentation:
+    inputs:
+            output: dict to save
+            output_path : path of the directory where the json will be saved
+            overwrite : 'true' to overwrite the existing json file
+    this function saves the json in the directory
+    """
+    file_name: str = os.path.basename(output_path)
+    if overwrite or not os.path.exists(output_path):
+        logging.info(f"the json with name {file_name} was saved succefully")
+        with open(output_path, "w") as fp:
+            json.dump(output, fp)
+    else:
+        logging.error(f"the json with name {file_name} is duplicated")
+        raise ValueError(f"{file_name} already exists")
