@@ -71,8 +71,8 @@ pii_: list = [
 def predict(
     pipeline,
     sentence: str,
-    threshold: float,
-) -> int:
+    threshold: dict,
+):
     """Documentation:
     inputs:
             pipeline: Hugging face pipeline object
@@ -80,14 +80,14 @@ def predict(
             threshold : the minimum probability of the predicted label
     This function predicts whether the sentence contains sensory information and returns a boolean value
     """
-    result_details = pipeline(sentence, candidate_labels, multi_label=True)
-    result_details: dict = dict(zip(result_details["labels"], result_details["scores"]))
+    results = pipeline(sentence, candidate_labels, multi_label=True)
+    result_details: dict = dict(zip(results["labels"], results["scores"]))
     result: dict = {
         name: round(np.mean(list(map(result_details.get, lst))), 2)
         for lst, name in pii_
     }
     pii_detected: dict = {name: result[name] for name in thresh(result, threshold)}
-    pii_detected: dict = check(pii_detected, sentence)
+    pii_detected = check(pii_detected, sentence)
     if license_plate(sentence):
         pii_detected["license_plate"] = 0.99
     if findMail(sentence):
@@ -108,7 +108,7 @@ def license_plate(text: str) -> bool:
     return license_plate != []
 
 
-def findBirthday(text: str) -> list:
+def findBirthday(text: str) -> bool:
     """Documentation:
     This function returns True if the birthday pattern was detected in the text.
     """
@@ -117,7 +117,7 @@ def findBirthday(text: str) -> list:
     return (p1 and p2) != []
 
 
-def findMail(text: str) -> list:
+def findMail(text: str) -> bool:
     """Documentation:
     This function returns True if the birthday pattern was detected in the text.
     """
@@ -148,7 +148,7 @@ def findNumber(text: str) -> bool:
     return [y.group(0) for y in re.compile(r"\d{4}.\d*").finditer(text)] != []
 
 
-def thresh(detected_labels: dict, tresholds: float) -> list:
+def thresh(detected_labels: dict, tresholds: dict) -> list:
     """Documentation:
     inputs:
         detected_labels: detected labels and their probability

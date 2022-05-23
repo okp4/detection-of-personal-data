@@ -1,11 +1,9 @@
 import click
 from transformers import pipeline
 from functions import predict, to_json
-import pandas as pd
 import os
 from tqdm import tqdm
 import __init__ as init
-import json
 from nltk.tokenize import sent_tokenize
 
 threshs = {
@@ -94,7 +92,7 @@ def version():
     default=False,
     help="passthrough, will not write anything",
 )
-def pii_detect(out_dir, input_file, thresh, overwrite, dry_run) -> list:
+def pii_detect(out_dir, input_file, thresh, overwrite, dry_run):
     """Represents cli 'pii_detect' command"""
     # validate_args(sentence, thresh)
     tresh_dict = dict(thresh)
