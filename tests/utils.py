@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+# import numpy as np
+# from sklearn.metrics import confusion_matrix
 
 
 def check(result_path: str, ref_path: str):
@@ -16,3 +18,12 @@ def check(result_path: str, ref_path: str):
     assert df_ref.equals(
         df_out
     ), f"json {name} should be the same than the reference json"
+
+
+# def scoring(label_predicted, truth_label):
+#     assert len(label_predicted) == len(
+#         truth_label
+#     ), "predicted values and labels should have same length"
+#     score: float = np.mean(label_predicted == truth_label)
+#     matrix = confusion_matrix(label_predicted, truth_label)
+#     return matrix, score

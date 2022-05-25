@@ -28,9 +28,7 @@ def get_arguments(test_path: str) -> list[list[str]]:
 
 @pytest.mark.parametrize(
     "arguments",
-    get_arguments(
-        "tests/data/inputs_test"
-    ),
+    get_arguments("tests/data/inputs_test"),
 )
 def test_detecter(tmpdir_factory, arguments):
 

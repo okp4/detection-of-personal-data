@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 import re
 import logging
@@ -72,7 +73,7 @@ def predict(
     pipeline,
     sentence: str,
     threshold: dict,
-):
+) -> Tuple:
     """Documentation:
     inputs:
             pipeline: Hugging face pipeline object
@@ -211,7 +212,7 @@ def check(result: dict, text: str) -> dict:
     return result_dict
 
 
-def to_json(output: dict, output_path: str, overwrite: bool):
+def to_json(output: dict, output_path: str, overwrite: bool) -> None:
     """Documentation:
     inputs:
             output: dict to save
@@ -233,11 +234,16 @@ def out(
     input_file: str,
     out_dir: str,
     file_name: str,
-    detected_labels: dict,
+    detected_labels,
     dry_run: bool,
     overwrite: bool,
-) -> None:
+    to_test: bool,
+):
     results = list(zip(*detected_labels))[0]
+    labels = [int(elem is not None) for elem in results]
+    if to_test:
+        return labels
+
     results = list(filter(None, results))
     sentences = list(zip(*detected_labels))[1]
     sentences = list(filter(None, sentences))

@@ -1,7 +1,6 @@
 import click
 from transformers import pipeline
 import os
-from typing import Optional
 from detection_of_personal_data.functions import predict, out
 from tqdm import tqdm
 import detection_of_personal_data.__init__ as init
@@ -102,9 +101,10 @@ def version():
 def pii_detect(
     input_file: str,
     out_dir: str,
-    thresh: tuple[str, float],
-    overwrite: Optional[bool] = False,
-    dry_run: Optional[bool] = False,
+    thresh,
+    overwrite: bool = False,
+    dry_run: bool = False,
+    to_test: bool = False,
 ):
     """Represents cli 'pii_detect' command"""
     # validate_args(sentence, thresh)
@@ -125,7 +125,7 @@ def pii_detect(
         predict(pipe, sent, thresholds) for sent in tqdm(df, total=len(df))
     ]
     logging.info("saving results...")
-    out(input_file, out_dir, file_name, detected_labels, dry_run, overwrite)
+    out(input_file, out_dir, file_name, detected_labels, dry_run, overwrite, to_test)
 
 
 if __name__ == "__main__":
