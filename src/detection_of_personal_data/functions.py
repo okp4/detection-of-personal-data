@@ -227,3 +227,32 @@ def to_json(output: dict, output_path: str, overwrite: bool):
     else:
         logging.error(f"the json with name {file_name} is duplicated")
         raise ValueError(f"{file_name} already exists")
+
+
+def out(
+    input_file: str,
+    out_dir: str,
+    file_name: str,
+    detected_labels: dict,
+    dry_run: bool,
+    overwrite: bool,
+) -> None:
+    results = list(zip(*detected_labels))[0]
+    results = list(filter(None, results))
+    sentences = list(zip(*detected_labels))[1]
+    sentences = list(filter(None, sentences))
+    outputs_detected = {}
+    detected = 0
+    if results != []:
+        detected = sum(list(zip(*results))[0])
+        outputs_detected = {
+            sent: reslt for (sent, reslt) in zip(sentences, list(zip(*results))[1])
+        }
+    output = {
+        "FileName": os.path.basename(input_file),
+        "Personal information detected": True if detected > 0 else False,
+        "Results": outputs_detected,
+    }
+    output_path = os.path.join("./", out_dir, "sheet_" + file_name + "_result.json")
+    if not dry_run:
+        to_json(output, output_path, overwrite)

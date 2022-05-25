@@ -1,10 +1,17 @@
 import click
 from transformers import pipeline
-from functions import predict, to_json
 import os
+from typing import Optional
+from detection_of_personal_data.functions import predict, out
 from tqdm import tqdm
-import __init__ as init
+import detection_of_personal_data.__init__ as init
 from nltk.tokenize import sent_tokenize
+import logging
+
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s ",
+    level=logging.INFO,
+)
 
 threshs = {
     "birth": 0.8,
@@ -92,7 +99,13 @@ def version():
     default=False,
     help="passthrough, will not write anything",
 )
-def pii_detect(out_dir, input_file, thresh, overwrite, dry_run):
+def pii_detect(
+    input_file: str,
+    out_dir: str,
+    thresh: tuple[str, float],
+    overwrite: Optional[bool] = False,
+    dry_run: Optional[bool] = False,
+):
     """Represents cli 'pii_detect' command"""
     # validate_args(sentence, thresh)
     tresh_dict = dict(thresh)
@@ -100,34 +113,19 @@ def pii_detect(out_dir, input_file, thresh, overwrite, dry_run):
         tag: tresh_dict[tag] if tag in tresh_dict.keys() else threshs[tag]
         for tag in threshs.keys()
     }
-    file_name = os.path.basename(input_file)
+    file_name = os.path.basename(input_file).split(".")[0]
     with open(input_file) as f:
         list_sent = [line.rstrip() for line in f]
     text = " ".join(list_sent)
     df = sent_tokenize(text)
+    logging.info("loading pipeline")
     pipe = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+    logging.info("prediction in progress")
     detected_labels: list = [
         predict(pipe, sent, thresholds) for sent in tqdm(df, total=len(df))
     ]
-    results = list(zip(*detected_labels))[0]
-    results = list(filter(None, results))
-    sentences = list(zip(*detected_labels))[1]
-    sentences = list(filter(None, sentences))
-    outputs_detected = {}
-    detected = 0
-    if results != []:
-        detected = sum(list(zip(*results))[0])
-        outputs_detected = {
-            sent: reslt for (sent, reslt) in zip(sentences, list(zip(*results))[1])
-        }
-    output = {
-        "FileName": os.path.basename(input_file),
-        "Personal information detected": True if detected > 0 else False,
-        "Results": outputs_detected,
-    }
-    output_path = os.path.join("./", out_dir, "sheet_" + file_name + "_result.json")
-    if not dry_run:
-        to_json(output, output_path, overwrite)
+    logging.info("saving results...")
+    out(input_file, out_dir, file_name, detected_labels, dry_run, overwrite)
 
 
 if __name__ == "__main__":
