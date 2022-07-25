@@ -1,18 +1,35 @@
 [tool.poetry]
-name = "peronnel_data_detection"
+name = "detection-of-personal-data"
 version = "0.1.0"
 description = ""
 authors = ["NourKired <n.kired@okp4.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pandas = "^1.4.1"
-nltk = "^3.7"
+pandas = "^1.4.2"
 common_regex = "^1.0.2"
+tqdm = "^4.64.0"
+flake8 = "^4.0.1"
+torch = "^1.11.0"
+transformers = "^4.19.2"
+nltk = "^3.7"
+black = "^22.3.0"
+pytest = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
-flake8 = "^4.0.1"
-flake8-bugbear = "^21.11.29"
+
+[tool.semantic_release]
+version_variable = [
+    "my_app/__init__.py:__version__",
+    "pyproject.toml:version"
+]
+branch = "main"
+upload_to_pypi = false
+upload_to_release = true
+build_command = "pip install poetry && poetry build"
+
+[tool.poetry.scripts]
+detection-of-personal-data = "detection_of_personal_data.main:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
