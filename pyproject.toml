@@ -6,7 +6,7 @@ authors = ["NourKired <n.kired@okp4.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pandas = "^1.4.2"
+pandas = "^1.4.4"
 common_regex = "^1.0.2"
 tqdm = "^4.64.0"
 flake8 = "^4.0.1"
