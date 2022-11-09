@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-project:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
 
   test-project:
     timeout-minutes: 30
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -57,7 +57,7 @@ jobs:
           poetry run python -m unittest discover
 
   make-dockerimage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
