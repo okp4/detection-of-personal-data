@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint-commits:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
         uses: wagoid/commitlint-github-action@v4
 
   lint-poetry:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
 
   lint-python-code:
     needs: lint-poetry
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -69,7 +69,7 @@ jobs:
           path: '.'
 
   lint-dockerfile:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -85,7 +85,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   lint-markdown:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -96,7 +96,7 @@ jobs:
           args: "**/*.md"
 
   lint-yaml:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -105,7 +105,7 @@ jobs:
         uses: ibiqlik/action-yamllint@v3.1.0
 
   lint-branch-name:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')
     steps:
       - name: Check branch name conventions
