@@ -2,10 +2,8 @@ name: Publish
 
 on:
   push:
-    branches: [ main ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ main ]
+    branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 
 jobs:
@@ -48,11 +46,6 @@ jobs:
               -t ghcr.io/${{ steps.project_context.outputs.image }}:${{ steps.project_context.outputs.major }}.${{ steps.project_context.outputs.minor }} \
               -t ghcr.io/${{ steps.project_context.outputs.image }}:${{ steps.project_context.outputs.version }} \
               -t ghcr.io/${{ steps.project_context.outputs.image }}:latest \
-              .
-          elif [[ $GITHUB_EVENT_NAME == pull_request ]]; then
-            echo "Publish docker image for branch"
-            docker build \
-              -t ghcr.io/${{ steps.project_context.outputs.image }}:branch \
               .
           else
             echo "Publish docker image for nightly"
