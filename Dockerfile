@@ -1,5 +1,5 @@
 # -----
-FROM python:3.9.7-slim-buster AS builder
+FROM python:3.9-slim-buster AS builder
 
 ENV \
     # python:
