@@ -33,11 +33,11 @@ jobs:
         id: project_context
         run: |
           version=`poetry version -s --no-ansi -n`
-          echo "::set-output name=version::$version"
-          echo "::set-output name=major=$(echo $version | cut -d. -f1)"
-          echo "::set-output name=minor=$(echo $version | cut -d. -f2)"
-          echo "::set-output name=revision=$(echo $version | cut -d. -f3)"
-          echo "::set-output name=image::$GITHUB_REPOSITORY"
+          echo "version=${version}"  >> $GITHUB_OUTPUT
+          echo "major=$(echo $version | cut -d. -f1)"  >> $GITHUB_OUTPUT
+          echo "minor=$(echo $version | cut -d. -f2)"  >> $GITHUB_OUTPUT
+          echo "revision=$(echo $version | cut -d. -f3)"  >> $GITHUB_OUTPUT
+          echo "image=${GITHUB_REPOSITORY}"  >> $GITHUB_OUTPUT
 
       - name: Build and publish image(s)
         run: |
