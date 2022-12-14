@@ -2,10 +2,8 @@ name: Publish
 
 on:
   push:
-    branches: [ main ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ main ]
+    branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 
 jobs:
@@ -13,15 +11,15 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install environment
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
       - name: Install Python Poetry
-        uses: abatilo/actions-poetry@v2.1.4
+        uses: abatilo/actions-poetry@v2.2.0
         with:
           poetry-version: 1.1.11
 
@@ -33,11 +31,11 @@ jobs:
         id: project_context
         run: |
           version=`poetry version -s --no-ansi -n`
-          echo "::set-output name=version::$version"
-          echo "::set-output name=major=$(echo $version | cut -d. -f1)"
-          echo "::set-output name=minor=$(echo $version | cut -d. -f2)"
-          echo "::set-output name=revision=$(echo $version | cut -d. -f3)"
-          echo "::set-output name=image::$GITHUB_REPOSITORY"
+          echo "version=${version}"  >> $GITHUB_OUTPUT
+          echo "major=$(echo $version | cut -d. -f1)"  >> $GITHUB_OUTPUT
+          echo "minor=$(echo $version | cut -d. -f2)"  >> $GITHUB_OUTPUT
+          echo "revision=$(echo $version | cut -d. -f3)"  >> $GITHUB_OUTPUT
+          echo "image=${GITHUB_REPOSITORY}"  >> $GITHUB_OUTPUT
 
       - name: Build and publish image(s)
         run: |
@@ -48,11 +46,6 @@ jobs:
               -t ghcr.io/${{ steps.project_context.outputs.image }}:${{ steps.project_context.outputs.major }}.${{ steps.project_context.outputs.minor }} \
               -t ghcr.io/${{ steps.project_context.outputs.image }}:${{ steps.project_context.outputs.version }} \
               -t ghcr.io/${{ steps.project_context.outputs.image }}:latest \
-              .
-          elif [[ $GITHUB_EVENT_NAME == pull_request ]]; then
-            echo "Publish docker image for branch"
-            docker build \
-              -t ghcr.io/${{ steps.project_context.outputs.image }}:branch \
               .
           else
             echo "Publish docker image for nightly"
