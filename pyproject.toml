@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "detection-of-personal-data"
 version = "0.1.0"
-description = ""
-authors = ["NourKired <n.kired@okp4.com>"]
+description = "Detection of personal data"
+authors = ["opensource-OKP4 <opensource@okp4.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -20,7 +20,7 @@ pytest = "^7.1.2"
 
 [tool.semantic_release]
 version_variable = [
-    "my_app/__init__.py:__version__",
+    "detection_of_personal_data/__init__.py:__version__",
     "pyproject.toml:version"
 ]
 branch = "main"
@@ -29,7 +29,7 @@ upload_to_release = true
 build_command = "pip install poetry && poetry build"
 
 [tool.poetry.scripts]
-detection-of-personal-data = "detection_of_personal_data.main:main"
+detection-of-personal-data = "detection_of_personal_data.main:cli"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

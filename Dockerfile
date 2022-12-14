@@ -44,11 +44,11 @@ RUN poetry build
 # -----
 FROM python:3.9.7-slim-buster
 
-LABEL org.opencontainers.image.source=https://github.com/okp4/template-python-project
+LABEL org.opencontainers.image.source=https://github.com/okp4/detection-of-personal-data
 
 COPY --from=builder /build/dist/*.whl /tmp/whl/
 
 RUN  python3 -m pip install --no-cache-dir /tmp/whl/*.whl \
   && rm -rf /tmp/whl
 
-ENTRYPOINT ["my-app"]
+ENTRYPOINT ["detection-of-personal-data"]
