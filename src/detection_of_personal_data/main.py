@@ -4,9 +4,10 @@ import os
 from detection_of_personal_data.functions import predict, out
 from tqdm import tqdm
 import detection_of_personal_data.__init__ as init
-from nltk.tokenize import sent_tokenize
+import nltk
 import logging
 
+nltk.download('punkt')
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s ",
     level=logging.INFO,
@@ -117,7 +118,7 @@ def pii_detect(
     with open(input_file) as f:
         list_sent = [line.rstrip() for line in f]
     text = " ".join(list_sent)
-    df = sent_tokenize(text)
+    df = nltk.tokenize.sent_tokenize(text)
     logging.info("loading pipeline")
     pipe = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
     logging.info("prediction in progress")
