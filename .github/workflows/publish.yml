@@ -17,7 +17,7 @@ jobs:
 
       - name: Set up context
         id: project_context
-        uses: FranzDiebold/github-env-vars-action@v2.3.1
+        uses: FranzDiebold/github-env-vars-action@v2.7.0
 
       - name: Extract metadata (tags, labels) for Docker
         id: docker_metadata
@@ -90,7 +90,7 @@ jobs:
         id: project_context
         uses: FranzDiebold/github-env-vars-action@v2.7.0
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
@@ -101,7 +101,13 @@ jobs:
 
       - name: Publish package
         working-directory: ${{env.WORK_DIR}}
+      - name: Publish package
+        working-directory: ${{env.WORK_DIR}}
         run: |
+          poetry install
+          poetry build
+          echo "🚀 Publishing pypi package"
+          poetry publish  -u __token__ -p "${{ secrets.PYPI_API_TOKEN }}"
           poetry install
           poetry build
           echo "🚀 Publishing pypi package"
