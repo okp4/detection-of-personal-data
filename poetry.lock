@@ -235,22 +235,22 @@ pyflakes = ">=3.0.0,<3.1.0"
 
 [[package]]
 name = "flake8-bugbear"
-version = "22.12.6"
+version = "23.5.9"
 description = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle."
 category = "dev"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8.1"
 files = [
-    {file = "flake8-bugbear-22.12.6.tar.gz", hash = "sha256:4cdb2c06e229971104443ae293e75e64c6107798229202fbe4f4091427a30ac0"},
-    {file = "flake8_bugbear-22.12.6-py3-none-any.whl", hash = "sha256:b69a510634f8a9c298dfda2b18a8036455e6b19ecac4fe582e4d7a0abfa50a30"},
+    {file = "flake8-bugbear-23.5.9.tar.gz", hash = "sha256:695c84a5d7da54eb35d79a7354dbaf3aaba80de32250608868aa1c85534b2a86"},
+    {file = "flake8_bugbear-23.5.9-py3-none-any.whl", hash = "sha256:631fa927fbc799e8ca636b849dd7dfc304812287137b6ecb3277821f028bee40"},
 ]
 
 [package.dependencies]
 attrs = ">=19.2.0"
-flake8 = ">=3.0.0"
+flake8 = ">=6.0.0"
 
 [package.extras]
-dev = ["coverage", "hypothesis", "hypothesmith (>=0.2)", "pre-commit", "tox"]
+dev = ["coverage", "hypothesis", "hypothesmith (>=0.2)", "pre-commit", "pytest", "tox"]
 
 [[package]]
 name = "huggingface-hub"
@@ -1164,4 +1164,4 @@ test = ["pytest (>=3.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "fa27cdb6ea92651f2266ea092b28b325bd7531a35da2c2ec60fe73e643bb7b6f"
+content-hash = "3a85bf3a5f3e15963d119862b6756d1d22f8bb867daf7d8d15b63d460908eb7c"
