@@ -9,10 +9,9 @@
 
 ## Purpose
 
-This repository contains detection sensible information service.
-The purpose of this service is to detect personal data such as: name, phone, email, mailing address, health information, birth information, passport number, driver's license number, social security number, tax file number, and credit card number of the person.
-The input to the service is a text file, i.e. any text file such as .txt, .csv, etc. and returns a json.
-The json indicates whether personal information was detected. If so, the json must also contain, for tokens(phrases) that contain personal information, the detected tags(referenced above).
+`detection-of-personal-data` is a CLI tool to detect sensitive personal data, including names, contact information, health details, identification numbers, and financial details.
+
+Users can input a variety of text files (e.g., `.txt`, `.csv`) which the service then processes, returning a JSON. The JSON not only indicates the presence of personal information but also provides tags for the detected data.
 
 ## Technology
 
@@ -28,6 +27,40 @@ A regular expression is a method used in programming for pattern matching. Regul
 
 State-of-the-art Machine Learning for PyTorch, TensorFlow and JAX.
 Transformers provides APIs to easily download and train state-of-the-art pretrained models.
+
+### Usage
+
+Retrieve command help with:
+
+```sh
+poetry run detection-of-personal-data pii-detect --help
+```
+
+```console
+Usage: detection-of-personal-data pii-detect [OPTIONS]
+
+  Represents cli 'pii_detect' command
+
+Options:
+  -i, --input TEXT               path to text file  [required]
+  -o, --output TEXT              output directory where json file will be
+                                 written  [default: .]
+  -tr, --thresh <TEXT FLOAT>...  the minimum probability of private data for
+                                 labels
+  -f, --force                    overwrite existing file
+  --dry-run                      passthrough, will not write anything
+  --help                         Show this message and exit.
+```
+
+Example:
+
+```sh
+poetry run detection-of-personal-data pii-detect \
+  -tr person 0.3 \
+  -tr passport 0.3 \
+  -i ./tests/data/inputs_test/text \
+  -o ./tests/data/outputs -f
+```
 
 ## System requirements
 
@@ -49,66 +82,19 @@ You can follow the link below on how to install and configure **Docker** on your
 
 - [Docker Install Documentation](https://docs.docker.com/install/)
 
-## What's included
-
-This template provides the following:
-
-- [poetry](https://python-poetry.org) for dependency management.
-- [flake8](https://flake8.pycqa.org) for linting python code.
-- [mypy](http://mypy-lang.org/) for static type checks.
-- [pytest](https://docs.pytest.org) for unit testing.
-- [click](https://palletsprojects.com/p/click/) to easily setup your project commands
-
-The project is also configured to enforce code quality by declaring some CI workflows:
-
-- conventional commits
-- lint
-- unit test
-- semantic release
-
 ## Everyday activity
 
 ### Build
 
-Project is built by [poetry](https://python-poetry.org).
+Project is built by [poetry](https://python-poetry.org). Initialize the project using:
 
 ```sh
 poetry install
 ```
 
-### Usage
+### Quality Assurance
 
-```sh
-poetry run detection-of-personal-data --help
-```
-
-Will give something like
-
-```console
-Usage: detection-of-personal-data pii-detect [OPTIONS]
-
-  Represents cli 'pii_detect' command
-
-Options:
-  -i, --input TEXT               path to text file  [required]
-  -o, --output TEXT              output directory where json file will be
-                                 written  [default: .]
-  -tr, --thresh <TEXT FLOAT>...  the minimum probability of private data for
-                                 labels
-  -f, --force                    overwrite existing file
-  --dry-run                      passthrough, will not write anything
-  --help                         Show this message and exit.
-```
-
-Example:
-
-```sh
-poetry run detection-of-personal-data pii-detect -tr person 0.3 -tr passport 0.3 -i ./tests/data/inputs_test/text -o ./tests/data/outputs -f
-```
-
-### Lint
-
-> ⚠️ Be sure to write code compliant with linters or else you'll be rejected by the CI.
+> ⚠️ Ensure your code complies with our linters to pass CI checks.
 
 **Code linting** is performed by [flake8](https://flake8.pycqa.org).
 
@@ -122,7 +108,7 @@ poetry run flake8 --count --show-source --statistics
 poetry run mypy .
 ```
 
-To improve code quality, we use other linters in our workflows, if you don't want to be rejected by the CI,
+To improve code quality, we use other linters in our workflows, if you want them to succeed in the CI,
 please check these additional linters.
 
 **Markdown linting** is performed by [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli).
@@ -137,11 +123,11 @@ markdownlint "**/*.md"
 hadolint Dockerfile
 ```
 
-### Unit Test
+#### Unit Testing
 
-> ⚠️ Be sure to write tests that succeed or else you'll be rejected by the CI.
+> ⚠️ Be sure to write tests that succeed to pass CI checks.
 
-Unit tests are performed by the [pytest](https://docs.pytest.org) testing framework.
+Unit testing is performed by the [pytest](https://docs.pytest.org) testing framework.
 
 ```sh
 poetry run pytest -v
